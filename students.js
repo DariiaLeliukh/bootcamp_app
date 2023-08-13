@@ -12,13 +12,14 @@ const arguments = process.argv.slice(2, process.argv.length);
 
 if (arguments.length === 2) {
   let requestedCohort = arguments[0];
-  let limit = arguments[1];
+  let limit = arguments[1] || 5;
+  const values = [`%${requestedCohort}%`, limit];
   pool.query(`
   SELECT students.id, students.name as student_name, cohorts.name as cohort_name 
   FROM students 
   JOIN cohorts ON cohorts.id = students.cohort_id 
-  WHERE cohorts.name LIKE '%${requestedCohort}%'
-  LIMIT ${limit};`)
+  WHERE cohorts.name LIKE $1
+  LIMIT $2;`, values)
     .then(res => {
       console.log(res.rows);
     })
